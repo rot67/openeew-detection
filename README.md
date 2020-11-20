@@ -9,7 +9,7 @@ The OpenEEW strategy for accurately detecting earthquakes while avoiding false p
 
 ## Components
 <img src="images/OpenEEW_detection.svg" alt="diagram" width="600"/>
-  
+
 ## Quick start
 Install [Docker](https://www.docker.com/get-started) and run a detector container with the following command.
 
@@ -26,7 +26,7 @@ docker run \
 ```
 
 You can change the port published to host and the credentials. In the following example the detector listens on port
-`8080` and the username and password created for authentication are `foo` and `bar`. 
+`8080` and the username and password created for authentication are `foo` and `bar`.
 
 ```shell-script
 docker run \
@@ -48,22 +48,23 @@ The Docker image contains a PostgreSQL database which is used to store devices a
 
 ### Build your own Docker image
 
-*For developers only*. Apply the changes to the `Dockerfile` and run the following command. 
+*For developers only*. Apply the changes to the `Dockerfile` and run the following command.
 
+From the /database directory :
 ```shell-script
-docker build --tag openeew/detector:dev .
+docker build --tag openeew/postgres:dev .
 ```
 
-Then run a development container:
+Then run a postgres development container:
 
 ```shell-script
 docker run \
   --interactive \
   --tty \
   --detach \
-  --publish 1883:1883 \
-  --name openeew-detector-dev \
-  openeew/detector:dev
+  --publish 5432:5432 \
+  --name openeew-postgres-dev \
+  openeew/postgres:dev
 ```
 
 ### Simulate sensor data
@@ -101,15 +102,15 @@ A [Mosquitto MQTT broker](https://mosquitto.org/) administers the following topi
 ### Detection script for single sensors
 The `detection.py` script runs a Short-Term Average/Long-Term Average STA/LTA algorithm followed by a Peak Ground Acceleration (PGA) calculation.
 
-#### STA/LTA 
+#### STA/LTA
 This method is widely used to identify any disturbances in the signal (such as earthquakes) and determine the time when an event starts.
 
 ![STA/LTA x component](images/sta_lta_x.png?raw=true "Record M7.2 Pinotepa Nacional, Oaxaca, Mexico (16-02-2018)")
-  
+
 The algorithm takes each channel independently (x, y and z) and applies the moving average using two windows and returns the ratio as a function. Based on the part of the signal where there is no earthquake, a trigger level can be defined.
 
 #### Shaking level
-The maximum acceleration, or Peak Ground Acceleration (PGA) `(x**2 + y**2 + z**2)**0.5)` is used to determine the level of shaking that needs to be updated after a triggering using the three components at the same time. 
+The maximum acceleration, or Peak Ground Acceleration (PGA) `(x**2 + y**2 + z**2)**0.5)` is used to determine the level of shaking that needs to be updated after a triggering using the three components at the same time.
 
 The output from this process is sent as a  value (PGA) using the topic `/pga-trigger`.
 
@@ -121,7 +122,7 @@ The outcome of this script is a confirmed earthquake event. This is sent by msg 
 
 ## Alternative detection implementations
 ### JavaScript
-The [openeew-nodered README]( https://github.com/openeew/openeew-nodered) contains an example of how to implement the PGA algorithm in JavaScript. 
+The [openeew-nodered README]( https://github.com/openeew/openeew-nodered) contains an example of how to implement the PGA algorithm in JavaScript.
 
 
 ### Authors
