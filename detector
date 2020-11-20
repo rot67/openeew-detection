@@ -4,10 +4,6 @@ set -em
 
 initialized_check_file="/opt/openeew/.initialized"
 
-su - postgres -c "PGDATA='/var/lib/postgresql/data' postgres" &
-timeout 1m sh -c "until nc -z 127.0.0.1 5432; do sleep 1; done"
-echo "🚀 PostgreSQL with TimescaleDB is ready"
-
 mosquitto -c /opt/openeew/mosquitto.conf -d
 timeout 1m sh -c "until nc -z 127.0.0.1 1883; do sleep 1; done"
 echo "🚀 Mosquitto is ready"
@@ -25,10 +21,6 @@ else
   else
     echo "⚠ Not using authentication"
   fi
-
-  su - postgres -c "createuser --login detector"
-  su - postgres -c "createdb --owner detector detector"
-  su - postgres -c "psql --username detector --dbname detector --file /opt/openeew/init_db.sql"
 
   touch "${initialized_check_file}"
   echo "✅ Initialized"

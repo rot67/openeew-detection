@@ -52,6 +52,7 @@ The Docker image contains a PostgreSQL database which is used to store devices a
 
 From the /database directory :
 ```shell-script
+cd database
 docker build --tag openeew/postgres:dev .
 ```
 
@@ -67,13 +68,30 @@ docker run \
   openeew/postgres:dev
 ```
 
+Additionally, to bring up the MQTT container from the root directory:
+
+```shell-script
+docker build --tag openeew/mqtt:dev .
+```
+
+Then run a postgres development container:
+
+```shell-script
+docker run \
+  --interactive \
+  --tty \
+  --detach \
+  --publish 1883:1883 \
+  --name openeew-mqtt-dev \
+  openeew/mqtt:dev
+
 ### Simulate sensor data
 
 Start a container as indicated above and then run the following on the *host* machine:
 
 ```shell-script
 cd openeew
-python3 sensor_simulator.py --username admin --password admin --earthquake 2018_7.2 --port 1883
+python3 sensor_simulator.py --earthquake 2018_7.2 --port 1883
 ```
 
 Note: You may need to install the Paho MQTT client. For example, `pip install paho-mqtt`
