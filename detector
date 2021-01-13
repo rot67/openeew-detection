@@ -17,6 +17,7 @@ else
     echo "🔑 Using authentication"
     touch /opt/openeew/mosquitto_passwords
     mosquitto_passwd -b /opt/openeew/mosquitto_passwords "${username}" "${password}"
+    echo "allow_anonymous false" >> /opt/openeew/mosquitto.conf
     echo "password_file /opt/openeew/mosquitto_passwords" >> /opt/openeew/mosquitto.conf
   else
     echo "⚠ Not using authentication"
