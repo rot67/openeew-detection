@@ -1,14 +1,34 @@
+# Mosquitto NodePort Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: openeew
+  name: mosquitto
   labels:
-    k8s-app: openeew
+    k8s-app: mosquitto
+    tier: backend
 spec:
   selector:
-    k8s-app: openeew
+    k8s-app: openeew-mqtt-auth
   type: NodePort
   ports:
    - port: 1883
-     nodePort: 31883
+     nodePort: 31880
      name: mqtt
+---
+
+#Postgres NodePort service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    k8s-app: postgres
+    tier: backend
+spec:
+  selector:
+    k8s-app: openeew-psql-auth
+  type: NodePort
+  ports:
+   - port: 1883
+     nodePort: 31881
+     name: psql
