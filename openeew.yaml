@@ -29,6 +29,6 @@ spec:
     k8s-app: openeew-psql-auth
   type: NodePort
   ports:
-   - port: 1883
+   - port: 5432
      nodePort: 31881
      name: psql
