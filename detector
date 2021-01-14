@@ -4,10 +4,6 @@ set -em
 
 initialized_check_file="/opt/openeew/.initialized"
 
-mosquitto -c /opt/openeew/mosquitto.conf -d
-timeout 1m sh -c "until nc -z 127.0.0.1 1883; do sleep 1; done"
-echo "🚀 Mosquitto is ready"
-
 if [ -f "${initialized_check_file}" ]; then
   echo "✅ Already initialized, skipping initialization"
 else
@@ -26,6 +22,10 @@ else
   touch "${initialized_check_file}"
   echo "✅ Initialized"
 fi
+
+mosquitto -c /opt/openeew/mosquitto.conf -d
+timeout 1m sh -c "until nc -z 127.0.0.1 1883; do sleep 1; done"
+echo "🚀 Mosquitto is ready"
 
 watch -n 600 /usr/sbin/logrotate /etc/logrotate.d/* &
 
