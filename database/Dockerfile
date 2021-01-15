@@ -28,7 +28,7 @@ RUN mkdir "${PGDATA}" \
   && echo "log_directory = '/var/log/postgresql'" >> "${PGDATA}/postgresql.conf" \
   && echo "log_filename = '%Y-%m-%d_%H%M%S.log'" >> "${PGDATA}/postgresql.conf" \
   && echo "listen_addresses = '*'" >> "${PGDATA}/postgresql.conf" \
-  && echo "host all  all    0.0.0.0/0  md5" >> "${PGDATA}/pg_hba.conf"
+  && echo "host all  all    0.0.0.0/0  trust" >> "${PGDATA}/pg_hba.conf"
 
 # Running the post-container script
 USER root
