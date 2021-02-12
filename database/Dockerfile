@@ -31,7 +31,7 @@ RUN mkdir "${PGDATA}" \
 
 # Running the post-container script
 USER root
-RUN /usr/sbin/detector
+RUN /usr/sbin/psql_setup
 
 USER postgres
 CMD ["postgres"]
