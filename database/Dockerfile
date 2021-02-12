@@ -15,7 +15,6 @@ RUN apk update --no-cache \
 # Copying the db schema and run script
 COPY init_db.sql /docker-entrypoint-initdb.d/
 COPY psql_setup /usr/sbin/psql_setup
-RUN chmod +x /usr/sbin/psql_setup
 
 USER postgres
 RUN mkdir "${PGDATA}" \
