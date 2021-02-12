@@ -13,7 +13,6 @@ RUN apk update --no-cache \
 
 COPY openeew/*.py /opt/openeew/
 COPY detector /usr/sbin/detector
-RUN chmod +x /usr/sbin/detector
 COPY logrotate/mosquitto /etc/logrotate.d/
 
 USER root
