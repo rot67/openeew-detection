@@ -1,16 +1,21 @@
 ![](https://github.com/openeew/openeew-detection/workflows/CI/badge.svg)
+
 # Earthquake detection for OpenEEW
+
 This is a simple Docker configuration to startup a new OpenEEW detection system on your local machine. It ingests data from OpenEEW sensors via an MQTT broker, and triggers for individual sensors using a detection method. These events are then sent to a multi-station logic script that checks time and distance proximity for sensors before declaring an earthquake. You can also [deploy the Docker container on Kubernetes](KUBERNETES.md) to target a publicly accessible endpoint.
 
 The OpenEEW strategy for accurately detecting earthquakes while avoiding false positives is to use a variety of tactics, including:
-* Filtering out non-earthquake vibrations by using [STA/LTA (Short-Term Average/Long-Term Average)](#stalta)
-* Detecting peak accelerations ([PGAs](#shaking-level)) above a certain threshold from the sensors
-* Aggregating readings from [multiple nearby sensors](#multistation-for-multiple-sensor-comparison)
+
+- Filtering out non-earthquake vibrations by using [STA/LTA (Short-Term Average/Long-Term Average)](#stalta)
+- Detecting peak accelerations ([PGAs](#shaking-level)) above a certain threshold from the sensors
+- Aggregating readings from [multiple nearby sensors](#multistation-for-multiple-sensor-comparison)
 
 ## Components
+
 <img src="images/OpenEEW_detection.svg" alt="diagram" width="600"/>
 
 ## Quick start
+
 Install [Docker](https://www.docker.com/get-started) and run a detector container with the following command.
 
 ```shell-script
@@ -48,7 +53,7 @@ The Docker image contains a PostgreSQL database which is used to store devices a
 
 ### Build your own Docker image
 
-*For developers only*. Apply the changes to the `Dockerfile` and run the following command.
+_For developers only_. Apply the changes to the `Dockerfile` and run the following command.
 
 Build a postgres development image:
 
@@ -89,7 +94,7 @@ docker run \
 
 ### Simulate sensor data
 
-Start a container as indicated above and then run the following on the *host* machine:
+Start a container as indicated above and then run the following on the _host_ machine:
 
 ```shell-script
 cd openeew
@@ -107,22 +112,28 @@ PYTHONPATH=./openeew:./test python -m unittest
 ```
 
 ### Sensor simulator
+
 `sensor_simulator.py` selects historic data from [/input](https://github.com/openeew/openeew-detection/tree/master/input) and publishes them to MQTT at an accurate rate (1 msg per sensor per second).
 
 ### MQTT broker
+
 A [Mosquitto MQTT broker](https://mosquitto.org/) administers the following topics:
+
 - `/traces` (raw accelerations from sensor, time, deviceid)
 - `/device` (device metadata; deviceid, lat, lon, firmware version)
 - `/pga-trigger` (threshold triggered for sensor; deviceid, pga intensity, time)
 - `/earthquake` (earthquake declared by comparing recent pga-triggers from various devices; eventid, time of event, pga intensity)
 
 ### Device information to database
+
 `DBwriter.py` updates the `devices` [table](https://github.com/openeew/openeew-detection/blob/master/init_db.sql) in the database with meta data for each sensor, including its location coordinates. This script also writes earthquake events to the database as they happen.
 
 ### Detection script for single sensors
+
 The `detection.py` script runs a Short-Term Average/Long-Term Average STA/LTA algorithm followed by a Peak Ground Acceleration (PGA) calculation.
 
 #### STA/LTA
+
 This method is widely used to identify any disturbances in the signal (such as earthquakes) and determine the time when an event starts.
 
 ![STA/LTA x component](images/sta_lta_x.png?raw=true "Record M7.2 Pinotepa Nacional, Oaxaca, Mexico (16-02-2018)")
@@ -130,28 +141,32 @@ This method is widely used to identify any disturbances in the signal (such as e
 The algorithm takes each channel independently (x, y and z) and applies the moving average using two windows and returns the ratio as a function. Based on the part of the signal where there is no earthquake, a trigger level can be defined.
 
 #### Shaking level
+
 The maximum acceleration, or Peak Ground Acceleration (PGA) `(x**2 + y**2 + z**2)**0.5)` is used to determine the level of shaking that needs to be updated after a triggering using the three components at the same time.
 
-The output from this process is sent as a  value (PGA) using the topic `/pga-trigger`.
+The output from this process is sent as a value (PGA) using the topic `/pga-trigger`.
 
 ### Multistation for multiple sensor comparison
+
 The `multistation.py` script subscribes to `/pga-trigger` to determine if an earthquake is occuring. This is done by evaluating distance and time between each `pga-trigger` msg. To get latitude and longitude, the script must read from the `devices` table in the database.
 
 The outcome of this script is a confirmed earthquake event. This is sent by msg to the `/earthquake` topic.
 
-
 ## Alternative detection implementations
-### JavaScript
-The [openeew-nodered README]( https://github.com/openeew/openeew-nodered) contains an example of how to implement the PGA algorithm in JavaScript.
 
+### JavaScript
+
+The [openeew-nodered README](https://github.com/openeew/openeew-nodered) contains an example of how to implement the PGA algorithm in JavaScript.
 
 ### Authors
+
 - [Grillo](https://grillo.io)
 - [Egidio Caprino](https://github.com/EgidioCaprino)
-___
 
-Enjoy!  Give us [feedback](https://github.com/openeew/openeew-detection/issues) if you have suggestions on how to improve this information. Here are some [guidelines for contributing algorithms](openeew/README.md).
+---
+
+Enjoy! Give us [feedback](https://github.com/openeew/openeew-detection/issues) if you have suggestions on how to improve this information. Here are some [guidelines for contributing algorithms](openeew/README.md).
 
 ## License
 
-This information is licensed under the Apache Software License, Version 2.  Separate third party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the [Developer Certificate of Origin, Version 1.1 (DCO)](https://developercertificate.org/) and the [Apache Software License, Version 2](http://www.apache.org/licenses/LICENSE-2.0.txt).
+This information is licensed under the Apache Software License, Version 2. Separate third party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the [Developer Certificate of Origin, Version 1.1 (DCO)](https://developercertificate.org/) and the [Apache Software License, Version 2](http://www.apache.org/licenses/LICENSE-2.0.txt).
