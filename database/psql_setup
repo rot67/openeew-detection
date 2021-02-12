@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+echo "✅ Started entry point script"
+
+set -em
+
+initialized_check_file="/var/lib/postgresql/data/.initialized"
+
+su - postgres -c "PGDATA='/var/lib/postgresql/data' postgres" &
+timeout 1m sh -c "until nc -z 127.0.0.1 5432; do sleep 1; done"
+echo "🚀 PostgreSQL with TimescaleDB is ready"
+
+if [ -f "${initialized_check_file}" ]; then
+  echo "✅ Already initialized, skipping initialization"
+else
+  echo "⏲ Initializing..."
+
+  su - postgres -c "createuser --login detector"
+  su - postgres -c "createdb --owner detector detector"
+  su - postgres -c "psql --username detector --dbname detector --file /docker-entrypoint-initdb.d/init_db.sql"
+
+  touch "${initialized_check_file}"
+  echo "✅ Initialized"
+fi
