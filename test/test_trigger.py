@@ -1,14 +1,13 @@
 from unittest import TestCase
-from numpy import array, ndarray
+from numpy import array
 from numpy.testing import assert_array_equal
-from trigger import trigger_time
+from trigger import sta_lta
 
-
-class TriggerTimeTest(TestCase):
-    def test_estimates_when_function_exceeds(self):
-        function = 10
-        t = array([1599574034])
-        trig_level = 100
-        expected = ndarray([])
-        actual = trigger_time(function, t, trig_level)
+class TestStaLta(TestCase):
+    def test_it_provides_the_right_value(self):
+        x = array([1, 2, 3])
+        nsta = 1
+        nlta = 1
+        expected = [1, 1, 1]
+        actual = sta_lta(x, nsta, nlta)
         assert_array_equal(expected, actual)
