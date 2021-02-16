@@ -15,7 +15,7 @@ def authenticate(client):
 
 
 def parser_json(payload):
-    '''
+    """
     Parser payload from mqtt
     Format json
     Returns:
@@ -26,7 +26,7 @@ def parser_json(payload):
     where:
     traces =  {"t" : numpy.array(t), "x" : numpy.array(x), "y" : numpy.array(y), "z" : numpy.array(z)}
 
-    '''
+    """
     payload = json.loads(payload)
     device_id = payload["device_id"]
     cloud_t = payload["cloud_t"]

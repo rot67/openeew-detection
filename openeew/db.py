@@ -7,10 +7,7 @@ def _get_connection():
     global _connection
     if _connection is None:
         _connection = connect(
-            user='detector',
-            host='127.0.0.1',
-            port=5432,
-            database='detector'
+            user="detector", host="127.0.0.1", port=5432, database="detector"
         )
     return _connection
 

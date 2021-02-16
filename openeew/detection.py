@@ -32,14 +32,13 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_publish(host, port, topic, data_out):
-    '''
-    '''
+    """"""
     client.publish(topic, data_out)
 
 
 def on_message(client, userdata, msg):
     try:
-        m_decode = str(msg.payload.decode('utf-8', 'ignore'))
+        m_decode = str(msg.payload.decode("utf-8", "ignore"))
         m_in = json.loads(m_decode)
 
         # appending msg
@@ -67,10 +66,10 @@ def on_message(client, userdata, msg):
                 # -------------- MOVING WINDOW -----------------------------
                 # Select the last seconds and rename
                 n = len(traces["x"])
-                x = _x[-n * long_window:]
-                y = _y[-n * long_window:]
-                z = _z[-n * long_window:]
-                t = _t[-n * long_window:]
+                x = _x[-n * long_window :]
+                y = _y[-n * long_window :]
+                z = _z[-n * long_window :]
+                t = _t[-n * long_window :]
                 # print("Longitude:", len(x), len(y), len(z), len(t))
 
                 # -------------- TRIGGER SECTION -----------------------------
@@ -88,18 +87,27 @@ def on_message(client, userdata, msg):
                 nttimes = len(ttimes_x) + len(ttimes_y) + len(ttimes_z)
 
                 if nttimes > 0:
-                    print("------------> Trigger of %s components. Sensor %s. Time %s" % (nttimes, device_id, cloud_t))
+                    print(
+                        "------------> Trigger of %s components. Sensor %s. Time %s"
+                        % (nttimes, device_id, cloud_t)
+                    )
                     accel = accel_value(numpy.array(x), numpy.array(y), numpy.array(z))
                     pga = numpy.round(numpy.max(accel), 3)
                     print("Acceleration: ", pga)
 
                     # --------------PUBLISH SECTION -----------------------------
-                    data_out = {"device_id": numpy.str(device_id), "time": numpy.str(cloud_t), "pga": numpy.str(pga)}
+                    data_out = {
+                        "device_id": numpy.str(device_id),
+                        "time": numpy.str(cloud_t),
+                        "pga": numpy.str(pga),
+                    }
                     # topic
                     topic = "/pga-trigger"
                     host = "localhost"
                     port = 1883
-                    client.on_publish = on_publish(host, port, topic, numpy.str(data_out))
+                    client.on_publish = on_publish(
+                        host, port, topic, numpy.str(data_out)
+                    )
     except BaseException as exception:
         print(exception)
 
@@ -107,11 +115,11 @@ def on_message(client, userdata, msg):
 client = authenticate(mqtt.Client())
 client.on_message = on_message
 client.on_connect = on_connect
-client.connect('localhost', 1883)
+client.connect("localhost", 1883)
 
 client.loop_start()
 
-print('🚀 Detector started')
+print("🚀 Detector started")
 
 while True:
     for device_id in list(inbox):
