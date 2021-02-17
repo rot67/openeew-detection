@@ -2,7 +2,7 @@ from db import execute_statement
 
 
 def save_device(device):
-    statement = '''
+    statement = """
         INSERT INTO devices (
             device_id,
             latitude,
@@ -11,13 +11,13 @@ def save_device(device):
             device_type,
             time_entered
         ) VALUES (%s, %s, %s, %s, %s, %s)
-    '''
+    """
     parameters = (
-        device['device_id'],
-        device['latitude'],
-        device['longitude'],
-        device['firmware_version'],
-        device['device_type'],
-        device['time_entered'],
+        device["device_id"],
+        device["latitude"],
+        device["longitude"],
+        device["firmware_version"],
+        device["device_type"],
+        device["time_entered"],
     )
     execute_statement(statement, parameters)

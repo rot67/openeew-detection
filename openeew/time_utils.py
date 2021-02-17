@@ -21,7 +21,9 @@ def set_time(times, sample_rate, samples):
         delta = 1 / sample_rate
         times.append(times[0] + samples * delta)
 
-    return arange(times[0] - ((samples / fifos)) * delta, times[-1] + delta, delta).tolist()
+    return arange(
+        times[0] - ((samples / fifos)) * delta, times[-1] + delta, delta
+    ).tolist()
 
 
 def get_current_timestamp():
