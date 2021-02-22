@@ -30,6 +30,8 @@ RUN mkdir "${PGDATA}" \
 
 # Running the post-container script
 USER root
+# change windows format sh scripts to  unix format same as using dos2unix cmd.
+RUN cat /usr/sbin/psql_setup| tr -d '\r' > /usr/sbin/psql_setup
 RUN /usr/sbin/psql_setup
 
 USER postgres
