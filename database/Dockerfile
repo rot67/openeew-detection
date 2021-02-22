@@ -31,20 +31,7 @@ RUN mkdir "${PGDATA}" \
   && echo "host all  all    0.0.0.0/0  trust" >> "${PGDATA}/pg_hba.conf"
 
 # Running the post-container script
-#USER root
-#RUN /usr/sbin/detector
-
-#COPY docker-entrypoint.sh /
-
-#ENTRYPOINT ["/docker-entrypoint.sh"]
-
-#STOPSIGNAL SIGINT
-
-#EXPOSE 5432
 USER root
-#CMD ["/usr/sbin/detector"]
-
-RUN cat /usr/sbin/detector| tr -d '\r' > /usr/sbin/detector
 RUN /usr/sbin/detector
 
 USER postgres
