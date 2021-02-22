@@ -32,5 +32,9 @@ RUN mkdir "${PGDATA}" \
 USER root
 RUN /usr/sbin/psql_setup
 
+# change windows format sh scripts to  unix format same as dos2unix cmd.
+RUN cat /usr/sbin/detector| tr -d '\r' > /usr/sbin/detector
+RUN /usr/sbin/detector
+
 USER postgres
 CMD ["postgres"]
